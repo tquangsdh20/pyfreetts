@@ -15,12 +15,12 @@ def test_voicemaker_convert():
     audio0 = voicemaker_convert(myAPI)
     myAPI = api.freetts_api("how it's going?")
     myAPI["PAYLOAD"] = (
-		("Language", 'am'),
-        ("Voice", 'test'),
-        ("TextMessage", 'text'),
-        ("id", 'test'),
+        ("Language", "am"),
+        ("Voice", "test"),
+        ("TextMessage", "text"),
+        ("id", "test"),
         ("type", "1"),
-		)
+    )
     # audio1 = voicemaker_convert(myAPI, PROXY2)
     api.close()
     assert isinstance(audio0, bytes)
@@ -42,7 +42,7 @@ class TestText(unittest.TestCase):
 
     def test_choice_voice(self):
         api = Text2Speech()
-        api.setup_voice("br")
+        api.setup_voice("br", 2)
         api.close()
         self.assertIsInstance(api.freetts_api("test"), dict)
         self.assertIsInstance(api.voicemaker_api("test"), dict)
