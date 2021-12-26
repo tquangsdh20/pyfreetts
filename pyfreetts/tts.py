@@ -32,7 +32,9 @@ def voicemaker_convert(api: Dict[str, Any], proxy: Any = None) -> bytes:
     path = js["path"][1::]
     # Retriving file mp3
     response = requests.get(api["URL2"].format(path=path), headers=api["HEAD2"])
-    return response.content
+    content = bytes()
+    content = response.content
+    return content
 
 
 def freetts_convert(api: Dict[str, Any], proxy: Any = None) -> bytes:
@@ -49,13 +51,15 @@ def freetts_convert(api: Dict[str, Any], proxy: Any = None) -> bytes:
         timeout=timeout,
         verify=verify,
     )
+    content = bytes()
     js = response.json()
     # Retriving file mp3
     if js["msg"] == "Fail":
         raise FailRequest("Fail to request FreeTTS")
     else:
         response = requests.get(api["URL2"].format(path=js["id"]), headers=api["HEAD2"])
-    return response.content
+        content = response.content
+    return content
 
 
 class Text2Speech(API):
@@ -70,21 +74,3 @@ class Text2Speech(API):
 
     def save_to_file(self, filename: str):
         save_audio(self.__audio__, filename)
-
-
-if __name__ == "__main__":
-    __api = API()
-    text = "how it's going?"
-    __api.setup_voice("am")
-    api = __api.freetts_api(text)
-    try:
-        audio = freetts_convert(api)
-    except FailRequest as e:
-        print(e)
-    else:
-        # playsound(audio)
-        with open("a.mp3", "wb") as fp:
-            fp.seek(0)
-            fp.write(audio)
-            fp.close()
-    __api.close()

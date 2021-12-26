@@ -5,7 +5,33 @@ from .const import GET_VOICES_BY_LANGUAGE, INIT_DATABASE, INLINE_OPTION
 import json
 
 
-def choice_voice(voices: List[Tuple]):
+def get_payload(voice: Tuple[str, str, str, int], text):
+    retval1 = (
+        ("Language", voice[1]),
+        ("Voice", voice[0]),
+        ("TextMessage", text),
+        ("id", voice[0]),
+        ("type", "1"),
+    )
+    retval2 = (
+        ("Language", voice[1]),
+        ("Voice", voice[0]),
+        ("TextMessage", text),
+        ("type", "0"),
+    )
+    if voice[3] == 1:
+        return retval1
+    else:
+        return retval2
+
+
+def get_voice_with_index(
+    voices: List[Tuple[str, str, str, int]], index: int
+) -> Tuple[str, str, str, int]:
+    return voices[index - 1]
+
+
+def choice_voice(voices: List[Tuple[str, str, str, int]]) -> Tuple[str, str, str, int]:
     __choice__ = 0
     __count__ = 0
     for voice in voices:
@@ -44,27 +70,13 @@ class API:
         self.cur.execute(GET_VOICES_BY_LANGUAGE, (language,))
         voices = self.cur.fetchall()
         if index in range(1, len(voices) + 1):
-            self.__voice__ = voices[index - 1]
+            self.__voice__ = get_voice_with_index(voices, index)
         else:
             print("All voices for your language: ")
             self.__voice__ = choice_voice(voices)
 
     def freetts_api(self, text: str) -> Dict[str, Any]:
-        if self.__voice__[3] == 1:
-            __query__ = (
-                ("Language", self.__voice__[1]),
-                ("Voice", self.__voice__[0]),
-                ("TextMessage", text),
-                ("id", self.__voice__[0]),
-                ("type", "1"),
-            )
-        else:
-            __query__ = (
-                ("Language", self.__voice__[1]),
-                ("Voice", self.__voice__[0]),
-                ("TextMessage", text),
-                ("type", "0"),
-            )
+        __query__ = get_payload(self.__voice__, text)
         __user__ = "Mozilla/5.0"
         __api__ = {
             "URL1": "https://freetts.com/Home/PlayAudio",
