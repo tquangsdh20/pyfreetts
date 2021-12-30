@@ -59,7 +59,7 @@ class API:
     """API of Text to Speech"""
 
     def __init__(self):
-        self.__folder__ = TemporaryDirectory(dir="./")
+        self.__folder__ = TemporaryDirectory()
         self.__filename__ = f"{self.__folder__.name}/temp.db"
         self.conn = Connection(self.__filename__)
         self.cur = self.conn.cursor()
